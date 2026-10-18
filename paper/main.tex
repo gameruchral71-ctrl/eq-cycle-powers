@@ -1,0 +1,113 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\title{Equivalence covers of powers of cycles when $k+1$ is a power of two}
+\author{Uchral Nyam-Osor\thanks{Proposed the research direction and asked for a problem that was still open.} \and Claude (Anthropic AI model)\thanks{Found the problem, did the mathematics and the computations, and wrote this note. Contact: Uchral Nyam-Osor, \texttt{gameruchral71@gmail.com}.}}
+\date{18 October 2026 \\ \small Draft, not peer reviewed.}
+\begin{document}
+\maketitle
+\begin{abstract}
+Let $C_n^k$ be the $k$-th power of the cycle $C_n$ and let $\mathrm{eq}(G)$ be the least number of equivalence graphs (vertex-disjoint unions of cliques) whose union is $G$. Yang (arXiv:2610.15635) showed that for large $n$, $\mathrm{eq}(C_n^k)\in\{m+1,m+2\}$ when $k=2^m-1$. Yang also determined the value when $(k+1)\mid n$ (it is $m+1$) and when $n$ is odd (it is $m+2$). The case of even $n$ not divisible by $k+1$ was left open. We prove a structural lemma: in a cover with $m+1$ layers, every class has span exactly $k$, and certain weighted pairs are covered exactly once. Using it, we settle the open case completely for $k=3$ and $k=7$, for all $n\ge 2k+2$: $\mathrm{eq}(C_n^k)=m+1$ if $(k+1)\mid n$ and $m+2$ otherwise. The proof is computer-assisted: we compute a finite transfer graph and show that all of its cycles have length divisible by $k+1$, and we certify small covers with SAT. We conjecture that the same holds for every $m$.
+\end{abstract}
+
+\section{Introduction}
+An \emph{equivalence graph} is a vertex-disjoint union of cliques. The \emph{equivalence covering number} $\mathrm{eq}(G)$ is the least $t$ such that the edges of $G$ are covered by $t$ equivalence subgraphs of $G$ (Alon~\cite{alon}). We call these subgraphs \emph{layers} and their cliques \emph{classes}. We take each layer to be a partition of $V(G)$, allowing singleton classes.
+
+For $C_n^k$ with $n\ge 2k+2$, the vertices are $\mathbb Z_n$ and $u\sim v$ iff $1\le |u-v|_n\le k$. Write $N=k+1$. Yang~\cite{yang} proved:
+\begin{itemize}
+\item $1+\lceil\log_2 N\rceil\le \mathrm{eq}(C_n^k)\le 1+2\lceil\log_2 N\rceil$ for $n\ge 2k+2$;
+\item $\mathrm{eq}(C_n^k)\in\{1+\lceil\log_2N\rceil,\,2+\lceil\log_2N\rceil\}$ for $n\ge N\max\{41,5\lceil\log_2N\rceil\}$;
+\item for $n\ge\max\{2k+2,k^2(k+2)\}$, $\mathrm{eq}(C_n^k)=1+\lceil\log_2 N\rceil$ if $N$ is not a power of two or $N\mid n$, and $=2+\lceil\log_2N\rceil$ if $N$ is a power of two and $n$ is odd.
+\end{itemize}
+So when $N=2^m$ and $n$ is even with $N\nmid n$, the value is $m+1$ or $m+2$, but which one was not decided. This note addresses that case. Our main results:
+
+\begin{theorem}\label{thm:main}
+Let $k\in\{3,7\}$, $N=k+1=2^m$ and $n\ge 2k+2$. Then $\mathrm{eq}(C_n^k)=m+1$ if $N\mid n$, and $\mathrm{eq}(C_n^k)=m+2$ otherwise.
+\end{theorem}
+
+\begin{conjecture}\label{conj}
+The statement of Theorem~\ref{thm:main} holds for every $k=2^m-1$ with $m\ge2$.
+\end{conjecture}
+
+The proof of Theorem~\ref{thm:main} combines a structural lemma valid for all $m$ (Section~\ref{sec:weights}) with a finite computation for $m=2,3$ (Section~\ref{sec:transfer}), SAT-certified covers for small $n$, and Yang's results for large $n$ (Section~\ref{sec:proof}).
+
+\section{A weighting and the structure of $(m+1)$-covers}\label{sec:weights}
+Fix $m\ge 2$, $N=2^m$, $k=N-1$. Define weights on distances $d\in\{1,\dots,k\}$:
+\[ w(N-2^j)=1\ (1\le j\le m-1),\qquad w(N-1)=2,\qquad w(d)=0 \text{ otherwise.}\]
+For a finite set $S$ of integers, put $w(S)=\sum_{\{x,y\}\subseteq S}w(|x-y|)$.
+
+\begin{lemma}[Weight lemma]\label{lem:weight}
+Let $S\subseteq\{a,a+1,\dots,a+k\}$ be nonempty. Then $w(S)\le |S|$. If equality holds, then $a\in S$ and $a+k\in S$.
+\end{lemma}
+\begin{proof}
+Shift so that $a=0$. Every distance with positive weight has the form $N-2^j$ with $0\le j\le m-1$. If $x<y$ in $S$ and $y-x=N-2^j$, then $x\le 2^j-1\le N/2-1$ and $y\ge N-2^j\ge N/2$. So weighted pairs join the lower part $P=S\cap[0,N/2)$ to the upper part $Q=S\cap[N/2,N)$. Encode $x\in P$ by $\alpha(x)=x$ and $y\in Q$ by $\beta(y)=N-1-y$; both take values in $[0,N/2)$. Then $y-x=N-2^j$ iff $\alpha(x)+\beta(y)+1=2^j$.
+
+Let $H$ be the graph on $\{0,1,\dots,N/2-1\}$ in which $a\ne b$ are adjacent iff $a+b+1$ is a power of two. Every $a\ge1$ has exactly one neighbour $b<a$: we need $2^j\in[a+1,2a]$, and there is exactly one such power of two. Hence $H$ is a tree rooted at $0$. Now let $\widetilde H$ be the bipartite graph with two copies $\{a'\}$ and $\{a''\}$ of the vertex set, where $a'b''$ is an edge iff $a+b+1$ is a power of two (this includes $a=b=0$). Without the edge $0'0''$, $\widetilde H$ is two disjoint copies of the tree $H$, because $H$ is bipartite. The edge $0'0''$ joins the two copies, so $\widetilde H$ is a tree.
+
+The pairs of $S$ at distance $N-2^j$ correspond exactly to the edges of $\widetilde H$ inside the vertex set $X=\{\alpha(x)':x\in P\}\cup\{\beta(y)'':y\in Q\}$, and $|X|=|S|$. The pair $\{0,N-1\}$ corresponds to the edge $0'0''$ and has weight $2$; every other weighted pair has weight $1$. An induced subgraph of a tree is a forest, so it has at most $|X|-1$ edges. Therefore
+\[w(S)\le (|S|-1)+[\,0\in S\text{ and }N-1\in S\,]\le |S|.\]
+If $w(S)=|S|$, the bracket equals $1$, so $0,N-1\in S$.
+\end{proof}
+
+Call $S$ \emph{tight} if $w(S)=|S|$. A computer count gives $4$, $36$ and $1764$ tight sets inside $[0,k]$ for $m=2,3,4$.
+
+\begin{corollary}\label{cor:structure}
+Let $n\ge 2k+2$. Then $\mathrm{eq}(C_n^k)\ge m+1$. In any cover of $C_n^k$ by $m+1$ layers:
+\begin{enumerate}
+\item every class is tight, so it has the form $v+S$ with $S\subseteq[0,k]$ tight, $0,k\in S$;
+\item there are no singleton classes, and each vertex lies in exactly one class of each layer;
+\item every pair at a distance $d$ with $w(d)>0$ is covered exactly once;
+\item for every $v\in\mathbb Z_n$ there is exactly one class whose left end is $v$.
+\end{enumerate}
+\end{corollary}
+\begin{proof}
+Since $n\ge 2k+2$, the cyclic distance of two vertices within distance $k$ is unambiguous. Each class lies in an arc of $k+1$ consecutive vertices. The total weight to be covered is $n\sum_d w(d)=n(m+1)$. A single layer covers weight at most $\sum_{\text{classes}}|S|=n$ by Lemma~\ref{lem:weight}. Hence at least $m+1$ layers are needed. With exactly $m+1$ layers, all these inequalities are equalities: every class is tight, and every weighted pair is covered exactly once. A singleton has weight $0<1$, so it is not tight. Every pair $\{v,v+k\}$ has positive weight and is covered exactly once, and every class is of the form $v+S$ with $0,k\in S$. So the class containing $\{v,v+k\}$ is the unique class with left end $v$.
+\end{proof}
+The lower bound $m+1$ is already in~\cite{yang}. The new content is the rigid structure in items 1--4.
+
+\section{The transfer graph}\label{sec:transfer}
+By Corollary~\ref{cor:structure}, an $(m+1)$-layer cover of $C_n^k$ determines a cyclic sequence $(\tau_v)_{v\in\mathbb Z_n}$ of \emph{types} $\tau_v=(S_v,\ell_v)$, where $v+S_v$ is the class with left end $v$ and $\ell_v\in\{0,\dots,m\}$ is its layer. Consider a vertex $v$. Every class containing $v$, and every pair $\{v-d,v\}$ with $d\le k$, involves only the types $\tau_{v-k},\dots,\tau_v$. So the cover is valid at $v$ iff the window $(\tau_{v-k},\dots,\tau_v)$ satisfies these \emph{local conditions}:
+\begin{enumerate}
+\item[(a)] for each layer $\ell$, exactly one class $u+S_u$ with $\ell_u=\ell$ and $u\in[v-k,v]$ contains $v$;
+\item[(b)] for each $1\le d\le k$, at least one class contains $\{v-d,v\}$, and exactly one when $w(d)>0$.
+\end{enumerate}
+Let $G_m$ be the directed graph whose vertices are $k$-tuples of types, with an arc $(\tau_0,\dots,\tau_{k-1})\to(\tau_1,\dots,\tau_k)$ whenever $(\tau_0,\dots,\tau_k)$ satisfies (a) and (b). An $(m+1)$-layer cover of $C_n^k$ gives a closed walk of length $n$ in $G_m$. A closed walk stays inside one strongly connected component, and its length is a multiple of the component's period (the gcd of its cycle lengths). Hence:
+
+\begin{lemma}\label{lem:period}
+If every strongly connected component of $G_m$ that contains a cycle has period divisible by $N$, then $C_n^k$ has no $(m+1)$-layer cover unless $N\mid n$.
+\end{lemma}
+
+\paragraph{Computation.} A $k$-tuple of types that lies on a cycle of $G_m$ occurs, for every $P$, as the middle part of a sequence of $P$ types satisfying (a) and (b) at every vertex whose window lies inside the sequence (unroll the cycle). For fixed $P$ and offset $c$, we listed all $k$-tuples that occur at positions $c,\dots,c+k-1$ of such a sequence. This used a SAT solver (CaDiCaL via PySAT), cardinality constraints, and blocking clauses to enumerate every solution. Restricted to these tuples, $G_m$ still contains every cycle of $G_m$. We built the arcs between them directly from (a) and (b), removed vertices with no incoming or outgoing arcs, and computed the strongly connected components and their periods.
+\begin{itemize}
+\item $m=2$ ($k=3$; $12$ types; $P=24$, $c=8$): $12$ tuples, forming $3$ components. Each component is a single directed cycle of length $4$. A direct enumeration of all $150$ windows satisfying (a) and (b) gives the same graph. Up to permuting the three layers, the pattern alternates the tight sets $\{0,3\}$ and $\{0,1,2,3\}$, with layers rotating.
+\item $m=3$ ($k=7$; $144$ types; $P=48$, $c=20$, and again with $P=64$, $c=28$): $288$ tuples, forming $36$ components. Each component is a single directed cycle of length $8$. Ignoring layers, the tight sets follow one of three patterns of period $4$ or $2$. One is $[0,7],\{0,7\},\{0,1,6,7\},\{0,7\}$. The other two alternate $\{0,7\}$ with $\{0,1,4,5,6,7\}$, or with its mirror image $\{0,1,2,3,6,7\}$. The layers then force period $8$.
+\end{itemize}
+In both cases every cyclic component has period $N$. So Lemma~\ref{lem:period} applies. Conversely, a closed walk satisfies (a) and (b) at every vertex and is therefore an $(m+1)$-layer cover. Each layer is a partition into cliques by (a), and every edge is covered by (b). So each cycle of length $N$, repeated $n/N$ times, gives an $(m+1)$-layer cover of $C_n^k$ for every $n\ge 2k+2$ with $N\mid n$.
+
+\section{Proof of Theorem~\ref{thm:main}}\label{sec:proof}
+\emph{Lower bound.} By Corollary~\ref{cor:structure}, $\mathrm{eq}\ge m+1$. If $N\nmid n$, Lemma~\ref{lem:period} and the computation rule out $m+1$ layers, so $\mathrm{eq}\ge m+2$.
+
+\emph{Upper bound.} If $N\mid n$, the periodic covers from Section~\ref{sec:transfer} give $\mathrm{eq}\le m+1$ for all $n\ge 2k+2$. If $N\nmid n$, Yang's two-value theorem gives $\mathrm{eq}\le m+2$ for $n\ge N\max\{41,5m\}$, that is, $n\ge164$ for $k=3$ and $n\ge 328$ for $k=7$. For the remaining $n$ ($8\le n\le 163$ for $k=3$, $16\le n\le 327$ for $k=7$), a SAT solver found explicit covers with $m+2$ layers. In fact we found covers with the exact number of layers for every $n$ in $[8,163]$ and $[16,440]$ respectively. Each cover was checked by an independent program: every layer is a disjoint union of cliques, and every edge is covered. The certificates are in the repository. \qed
+
+\begin{remark}
+For $m=2,3$ only a few local patterns survive, and in each of them the layer labels repeat only after $N$ steps, even when the sets repeat sooner. A conceptual explanation of this for all $m$ would prove Conjecture~\ref{conj}. For $m=4$ there are $1764$ tight sets and $5$ layers, and the same computation is in progress.
+\end{remark}
+
+\section*{Code and data}
+All scripts, logs and the cover certificates are in the accompanying repository: \texttt{tight.py} (tight sets), \texttt{satscan.py} (transfer graph; \texttt{layerscan.py} is a direct check for $k=3$), \texttt{eqsat.py} and \texttt{upper.py} (SAT covers and their checks), \texttt{witness/} (certificates).
+
+\section*{Use of AI}
+This work was carried out by an AI model (Claude, by Anthropic) at the request of Uchral Nyam-Osor, who proposed looking for a problem that nobody had yet solved. Uchral Nyam-Osor did not do the mathematics. The text has not been checked by a human expert. Corrections are welcome.
+
+\begin{thebibliography}{9}
+\bibitem{alon} N. Alon, Covering graphs by the minimum number of equivalence relations, \emph{Combinatorica} 6 (1986) 201--206.
+\bibitem{yang} Z. Yang, arXiv:2610.15635 [math.CO] (October 2026).
+\end{thebibliography}
+\end{document}

@@ -1,0 +1,11 @@
+k=7 n=20 t=4 UNSAT 2.6s
+k=7 n=22 t=4 UNSAT 0.9s
+k=7 n=26 t=4 UNSAT 1.8s
+k=7 n=28 t=4 UNSAT 1.5s
+k=7 n=30 t=4 UNSAT 1.4s
+k=7 n=34 t=4 UNSAT 1.5s
+k=7 n=36 t=4 UNSAT 5.9s
+k=7 n=38 t=4 UNSAT 5.2s
+k=7 n=42 t=4 UNSAT 2.0s
+k=7 n=44 t=4 UNSAT 4.1s
+k=7 n=46 t=4 UNSAT 1.9s

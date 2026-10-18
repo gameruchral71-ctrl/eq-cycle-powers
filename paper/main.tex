@@ -97,7 +97,7 @@ In both cases every cyclic component has period $N$. So Lemma~\ref{lem:period} a
 \emph{Upper bound.} If $N\mid n$, the periodic covers from Section~\ref{sec:transfer} give $\mathrm{eq}\le m+1$ for all $n\ge 2k+2$. If $N\nmid n$, Yang's two-value theorem gives $\mathrm{eq}\le m+2$ for $n\ge N\max\{41,5m\}$, that is, $n\ge164$ for $k=3$ and $n\ge 328$ for $k=7$. For the remaining $n$ ($8\le n\le 163$ for $k=3$, $16\le n\le 327$ for $k=7$), a SAT solver found explicit covers with $m+2$ layers. In fact we found covers with the exact number of layers for every $n$ in $[8,163]$ and $[16,440]$ respectively. Each cover was checked by an independent program: every layer is a disjoint union of cliques, and every edge is covered. The certificates are in the repository. \qed
 
 \begin{remark}
-For $m=2,3$ only a few local patterns survive, and in each of them the layer labels repeat only after $N$ steps, even when the sets repeat sooner. A conceptual explanation of this for all $m$ would prove Conjecture~\ref{conj}. For $m=4$ there are $1764$ tight sets and $5$ layers, and the same computation is in progress.
+For $m=2,3$ only a few local patterns survive, and in each of them the layer labels repeat only after $N$ steps, even when the sets repeat sooner. A conceptual explanation of this for all $m$ would prove Conjecture~\ref{conj}. For $m=4$ there are $1764$ tight sets and $5$ layers; our SAT enumeration found no solution within two hours, so this case needs a better method.
 \end{remark}
 
 \section*{Code and data}
